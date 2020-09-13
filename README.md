@@ -1,5 +1,5 @@
 # Asus-G750JX
-Guide and Files to support MacOS Catalina and possible Big Sur
+Guide and Files to support MacOS Catalina and possibly Big Sur
 1) Go to Asus Laptop Bios Setup change under USB, XHCI Pre-Boot Mode from Smart Auto to Enabled or you won’t be able to boot USB installer. Change Launch CSM to disabled this will also disable PCE.  See in Bios Screenshots.  I have enabled in screenshot it will work but just disable it.
 2) create a USB installer of macOS Catalina.   You need pre existing MacOS or friends computer to get a copy
 3) Format USB to GUID HFS Journal.   Name USB untitled in order for step 4 to work
