@@ -4,7 +4,7 @@ Guide and Files to support MacOS Catalina and Big Sur
 2) create a USB installer of macOS Catalina or Big Sur.   You need pre existing MacOS or friends computer to get a copy
 3) Format USB to GUID HFS Journal.   Name USB untitled in order for step 4 to work
 4) Make sure a copy of macOS Catalina or Big Sur is in your applications and run this terminal command with USB inserted in step 5.  WARNING If your Windows Hard Drive is labelled Untitled then change the USB to another name and then change Untitled to whatever the name is of your USB in step 5.  This will take a little while to install Mojave onto USB.
-5) sudo /Applications/Install\ macOS\ Catalina.app/Contents/Resources/createinstallmedia --volume /Volumes/UNTITLED.  Google for Big Sur.
+5) https://support.apple.com/en-us/HT201372
 6) Install Clover v5122 onto USB. IF you are going to install Big Sur you must use CLover v5130 or greater and its a completly different configuration I havenot done you will need to read up on it if you plan on using Clover.  I would stay with OpenCore.
 7) install Clover Configurator and use the Mount EFI on located on left side to mount USB
 8) Unzip EFI.zip and Copy that folder inside the mounted EFI of USB.
