@@ -23,4 +23,4 @@ Guide and Files to support MacOS Catalina and Big Sur
 21) GPU works natively.
 22) I have included several up to date Apps you can use and Clover Configurator a must for now, also included Plist Editor Pro will only work after you run the gatekeeper command then manually install it that comes with plist Editor Pro.  I also included Ioregistry Explorer used to determine what is working and what is not but everything is working.  I have 5 of these Asus G750JX laptops and they all run Catalina 10.15.6 flawlessly.
 
-Next Project is to port this over to OpenCore unless someone else needs to take it over.  You will need the EFI string from Clover to make LCD brightness and the kexts in Clover to make it work.
+These instructions are for an older version of CLover, I have moved to OpenCore so instructions need to be updated when I have time.
