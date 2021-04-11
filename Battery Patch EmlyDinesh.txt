@@ -1,0 +1,105 @@
+# Patch by EMlyDinEsH (www.osxlatitude.com)
+
+#
+# Patch which allows new OS X ACPI EC reads to work with battery manager kext
+# by Converting battery EC registers from 16-bit to 8-bit.
+#
+
+# Rename EC device to EC0
+into device name_hid PNP0C09 set_label begin EC0 end;
+
+# Change battery EC registers from 16-bit to 8-bit
+into device label EC0 code_regex TAH0,\s+16 replace_matched begin TH00, 8,\nTH01, 8 end;
+into device label EC0 code_regex TAH1,\s+16 replace_matched begin TH10, 8,\nTH11, 8 end;
+into device label EC0 code_regex DT2B,\s+16 replace_matched begin DTB0, 8,\nDTB1, 8 end;
+into device label EC0 code_regex B0SN,\s+16 replace_matched begin B0S0, 8,\nB0S1, 8 end;
+into device label EC0 code_regex B1SN,\s+16 replace_matched begin B1S0, 8,\nB1S1, 8 end;
+into device label EC0 code_regex B0C3,\s+16 replace_matched begin BC30, 8,\nBC31, 8 end;
+
+into device label EC0 code_regex B0VL,\s+16 replace_matched begin B0V0, 8,\nB0V1, 8 end;
+into device label EC0 code_regex B0RC,\s+16 replace_matched begin B0R0, 8,\nB0R1, 8 end;
+into device label EC0 code_regex B0FC,\s+16 replace_matched begin B0F0, 8,\nB0F1, 8 end;
+into device label EC0 code_regex B0MD,\s+16 replace_matched begin B0M0, 8,\nB0M1, 8 end;
+into device label EC0 code_regex B0ST,\s+16 replace_matched begin B0T0, 8,\nB0T1, 8 end;
+into device label EC0 code_regex B0CC,\s+16 replace_matched begin BC00, 8,\nBC01, 8 end;
+
+into device label EC0 code_regex B0DC,\s+16 replace_matched begin B0D0, 8,\nB0D1, 8 end;
+into device label EC0 code_regex B0DV,\s+16 replace_matched begin BV00, 8,\nBV01, 8 end;
+into device label EC0 code_regex B1VL,\s+16 replace_matched begin B1V0, 8,\nB1V1, 8 end;
+into device label EC0 code_regex B1RC,\s+16 replace_matched begin B1R0, 8,\nB1R1, 8 end;
+into device label EC0 code_regex B1FC,\s+16 replace_matched begin B1F0, 8,\nB1F1, 8 end;
+into device label EC0 code_regex B1MD,\s+16 replace_matched begin B1M0, 8,\nB1M1, 8 end;
+into device label EC0 code_regex B1ST,\s+16 replace_matched begin B1T0, 8,\nB1T1, 8 end;
+into device label EC0 code_regex B1CC,\s+16 replace_matched begin BC10, 8,\nBC11, 8 end;
+
+into device label EC0 code_regex B1DC,\s+16 replace_matched begin B1D0, 8,\nB1D1, 8 end;
+into device label EC0 code_regex B1DV,\s+16 replace_matched begin BV10, 8,\nBV11, 8 end;
+
+# Change read registers from 16-bit to 8-bit
+into_all method label TACH code_regex \(TAH0, replaceall_matched begin (B1B2 (TH00, TH01), end;
+into_all method label TACH code_regex \(TAH1, replaceall_matched begin (B1B2 (TH10, TH11), end;
+into_all method label SMBR code_regex \(DT2B, replaceall_matched begin (B1B2 (DTB0, DTB1), end;
+into_all method label BIFA code_regex \(B1SN, replaceall_matched begin (B1B2 (B1S0, B1S1), end;
+into_all method label BIFA code_regex \(B0SN, replaceall_matched begin (B1B2 (B0S0, B0S1), end;
+
+into_all method label _BIX code_regex \(\^\^LPCB.EC0.B0C3, replaceall_matched begin (B1B2 (^^LPCB.EC0.BC30, ^^LPCB.EC0.BC31), end;
+into_all method label _BIX code_regex \(\\_SB.PCI0.LPCB.EC0.B0C3, replaceall_matched begin (B1B2 (\_SB.PCI0.LPCB.EC0.BC30, \_SB.PCI0.LPCB.EC0.BC31), end;
+
+# Change write registers from 16-bit to 8-bit
+# Replace DT2B with B1B2 (DTB0, DTB1) in Store (Arg4, DT2B)
+into_all method label SMBW code_regex \DT2B\) replaceall_matched begin 
+Local4)\n
+Store (Local4, DTB0)\n
+Store (ShiftRight (Local4, 8), DTB1) 
+end;
+
+into_all method label BIF0 code_regex \(B1MD, replaceall_matched begin (B1B2 (B1M0, B1M1), end;
+into_all method label BIF0 code_regex \(B0MD, replaceall_matched begin (B1B2 (B0M0, B0M1), end;
+into_all method label BIF1 code_regex \(B1DC, replaceall_matched begin (B1B2 (B1D0, B1D1), end;
+into_all method label BIF1 code_regex \(B0DC, replaceall_matched begin (B1B2 (B0D0, B0D1), end;
+into_all method label BIF2 code_regex \(B1FC, replaceall_matched begin (B1B2 (B1F0, B1F1), end;
+into_all method label BIF2 code_regex \(B0FC, replaceall_matched begin (B1B2 (B0F0, B0F1), end;
+into_all method label BIF3 code_regex \(B1MD, replaceall_matched begin (B1B2 (B1M0, B1M1), end;
+into_all method label BIF3 code_regex \(B0MD, replaceall_matched begin (B1B2 (B0M0, B0M1), end;
+into_all method label BIF4 code_regex \(B1DV, replaceall_matched begin (B1B2 (BV10, BV11), end;
+into_all method label BIF4 code_regex \(B0DV, replaceall_matched begin (B1B2 (BV00, BV01), end;
+into_all method label OLPM code_regex \\_SB.PCI0.LPCB.EC0.B0DC, replaceall_matched begin B1B2 (\\_SB.PCI0.LPCB.EC0.B0D0, \\_SB.PCI0.LPCB.EC0.B0D1), end;
+into_all method label OLPM code_regex \\_SB.PCI0.SBRG.EC0.B0DC, replaceall_matched begin B1B2 (\\_SB.PCI0.SBRG.EC0.B0D0, \\_SB.PCI0.SBRG.EC0.B0D1), end;
+
+into_all method label WMNB code_regex \^\^PCI0.LPCB.EC0.B0RC replaceall_matched begin B1B2 (^^PCI0.LPCB.EC0.B0R0, ^^PCI0.LPCB.EC0.B0R1) end;
+into_all method label WMNB code_regex \^\^PCI0.LPCB.EC0.B1RC replaceall_matched begin B1B2 (^^PCI0.LPCB.EC0.B1R0, ^^PCI0.LPCB.EC0.B1R1) end;
+into_all method label WMNB code_regex \^\^PCI0.LPCB.EC0.B1DV replaceall_matched begin B1B2 (^^PCI0.LPCB.EC0.BV10, ^^PCI0.LPCB.EC0.BV11) end;
+into_all method label WMNB code_regex \^\^PCI0.LPCB.EC0.B0DV replaceall_matched begin B1B2 (^^PCI0.LPCB.EC0.BV00, ^^PCI0.LPCB.EC0.BV01) end;
+into_all method label WMNB code_regex \^\^PCI0.LPCB.EC0.B1FC replaceall_matched begin B1B2 (^^PCI0.LPCB.EC0.B1F0, ^^PCI0.LPCB.EC0.B1F1) end;
+into_all method label WMNB code_regex \^\^PCI0.LPCB.EC0.B0FC replaceall_matched begin B1B2 (^^PCI0.LPCB.EC0.B0F0, ^^PCI0.LPCB.EC0.B0F1) end;
+
+
+# Change write registers from 16-bit to 8-bit
+into_all method label BSTS code_regex \(B1ST, replaceall_matched begin (B1B2 (B1T0, B1T1), end;
+into_all method label BSTS code_regex \(B0ST, replaceall_matched begin (B1B2 (B0T0, B0T1), end;
+into_all method label BCRT code_regex \(B1CC, replaceall_matched begin (B1B2 (BC10, BC11), end;
+into_all method label BCRT code_regex \(B0CC, replaceall_matched begin (B1B2 (BC00, BC01), end;
+into_all method label BRCP code_regex \(B1RC, replaceall_matched begin (B1B2 (B1R0, B1R1), end;
+into_all method label BRCP code_regex \(B0RC, replaceall_matched begin (B1B2 (B0R0, B0R1), end;
+into_all method label BVOT code_regex \(B1VL, replaceall_matched begin (B1B2 (B1V0, B1V1), end;
+into_all method label BVOT code_regex \(B0VL, replaceall_matched begin (B1B2 (B0V0, B0V1), end;
+
+into_all method label FBST code_regex \^\^LPCB.EC0.B0DV, replaceall_matched begin B1B2 (^^LPCB.EC0.BV00, ^^LPCB.EC0.BV01), end;
+into_all method label CBST code_regex \^\^LPCB.EC0.B0DV, replaceall_matched begin B1B2 (^^LPCB.EC0.BV00, ^^LPCB.EC0.BV01), end;
+
+# Removing unnecessary read for 256bit register
+into_all method label _BIF code_regex Store\s\(\^\^LPCB.EC0.BIF9\s\(\),\sIndex\s\(PBIF,\s0x09\)\) replaceall_matched begin \  end; 
+into_all method label _BIF code_regex Store\s\(\\_SB.PCI0.LPCB.EC0.BIF9\s\(\),\sIndex\s\(PBIF,\s0x09\)\) replaceall_matched begin \  end; 
+
+# Method to read EC 8 bit battery registers 
+# B1B2(lower byte, higher byte)
+into method label B1B2 remove_entry;
+into definitionblock code_regex . insert
+begin
+Method (B1B2, 2, NotSerialized)\n
+{\n
+	ShiftLeft (Arg1, 8, Local0)\n
+	Or (Arg0, Local0, Local0)\n
+	Return (Local0)\n
+}\n
+end;
