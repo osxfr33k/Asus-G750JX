@@ -1,0 +1,74 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2512
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Verdana-Bold;\f1\fnil\fcharset0 Verdana;\f2\fnil\fcharset0 Monaco;
+}
+{\colortbl;\red255\green255\blue255;\red16\green16\blue16;\red254\green254\blue254;\red237\green128\blue15;
+\red249\green249\blue249;\red242\green242\blue242;}
+{\*\expandedcolortbl;;\cssrgb\c7843\c7843\c7843;\cssrgb\c99608\c99608\c99608;\cssrgb\c94902\c57647\c5098;
+\cssrgb\c98039\c98039\c98039;\cssrgb\c96078\c96078\c96078;}
+\margl1440\margr1440\vieww19560\viewh15600\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\b\fs30 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Renaming existing methods
+\f1\b0 \
+\
+For now, there are duplicate methods in DSDT and this SSDT-BATT.aml. For each method in DSDT that the SSDT-BATT.aml version will replace, we must rename the method in DSDT to something else, which will allow the SSDT version to override.\
+\
+Just as in post #1, this part follows the "Rename/Replace" pattern.\
+The methods that need replacements are FBST, _BIX, BIFA, SMBR, SMBW, ECSB, and TACH.\
+\
+For this step, it is useful to create a mixed bytecode listing for the native DSDT.aml.\
+It can be created with: "iasl -l -dl DSDT.aml", which creates a mixed listing in DSDT.dsl\
+\
+For the FBST method:\
+\pard\pardeftab720\partightenfactor0
+
+\fs26 \cf4 \cb5 \strokec4 Code:\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f2 \cf2 \cb6 \strokec2             Method (FBST, 4, NotSerialized)\
+            \{\
+                And (Arg1, 0xFFFF, Local1)\
+                Store (Zero, Local0)\
+\
+  FF74: 14 43 12 46 42 53 54 04 7B 69 0B FF FF 61 70 00  // .C.FBST.\{i...ap.\
+  FF84: 60\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs30 \cf2 \cb3 \
+A potential rename patch (FBST->XBST):\
+Find: <46 42 53 54 04>\
+Replace: <58 42 53 54 04>\
+\
+It is a good idea to verify that there is only one match for the Find hex data by searching for it in a hex editor such as Hex Fiend. Because the patch should ONLY apply to the method definition, not other code that may be present in the DSDT (or native SSDTs).\
+\
+The target name you choose must be unique within the scope that the method resides. Creating a duplicate method will cause kernel panic. Changing the first letter to 'X' is usually ok, but no guarantee.\
+\
+Patches for the rest of the methods:\
+_BIX->XBIX:\
+Find: <5F 42 49 58 00>\
+Replace: <58 42 49 58 00>\
+\
+BIFA->XIFA:\
+Find: <42 49 46 41 00>\
+Replace: <58 49 46 41 00>\
+\
+SMBR->XMBR:\
+Find: <53 4D 42 52 0B>\
+Replace: <58 4D 42 52 0B>\
+\
+SMBW->XMBW:\
+Find: <53 4D 42 57 0D>\
+Replace: <58 4D 42 57 0D>\
+\
+ECSB->XCSB:\
+Find: <45 43 53 42 07>\
+Replace: <58 43 53 42 07>\
+\
+TACH->XACH:\
+Find: <54 41 43 48 09>\
+Replace: <58 41 43 48 09>\
+\
+After adding those patches to config.plist/ACPI/DSDT/Patches, the methods in native DSDT will be renamed by Clover. And as a result of the renaming, the patched methods defined in SSDT-BATT.aml will override.\
+}
